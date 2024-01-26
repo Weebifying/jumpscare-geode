@@ -9,17 +9,12 @@ CCSprite* jumpscare_sprite = NULL;
 CCSprite* background = NULL;
 
 class $modify(PlayerObject) {
-	bool init(int p0, int p1, GJBaseGameLayer* p2, CCLayer* p3, bool p4) {
-		if (!PlayerObject::init(p0, p1, p2, p3, p4)) return false;
-
-		log::info("hey");
-
-		return true;
-	}
-
-
 	TodoReturn playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
+
+		// probability check
+		auto chance = Mod::get()->getSettingValue<double>("chance");
+		if (rand()/(RAND_MAX+1.0) > chance/100) return;
 
 		// thanks nicknamegg
 		const auto runningScene = CCDirector::get()->getRunningScene();
@@ -77,16 +72,16 @@ class $modify(PlayLayer) {
 	}
 };
 
-class $modify(PauseLayer) {
-	bool init(bool p0) {
-		if (!PauseLayer::init(p0)) return false;
+// class $modify(PauseLayer) {
+// 	bool init(bool p0) {
+// 		if (!PauseLayer::init(p0)) return false;
 
 		
 
-		return true;
-	}
+// 		return true;
+// 	}
 
-};
+// };
 
 
 

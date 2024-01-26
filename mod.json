@@ -15,5 +15,14 @@
 			"resources/jumpscare.png",
 			"resources/jumpscareAudio.ogg"
 		]
+	},
+	"settings": {
+		"chance": {
+            "name": "Probability(%)",
+            "type": "float",
+            "default": 10,
+            "min": 0,
+            "max": 100
+		}
 	}
 }
