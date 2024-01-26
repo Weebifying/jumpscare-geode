@@ -5,7 +5,7 @@
 
 using namespace geode::prelude;
 
-CCSprite* jumpscare_sprite = NULL;
+CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
 
 class $modify(PlayerObject) {
@@ -21,11 +21,11 @@ class $modify(PlayerObject) {
 		auto winSize = CCDirector::get()->getWinSize();
 
 		if (!runningScene->getChildByID("jumpscare")) {
-			jumpscare_sprite = CCSprite::create("jumpscare.png"_spr);
-			jumpscare_sprite->setID("jumpscare");
+			jumpscare = CCSprite::create("jumpscare.png"_spr);
+			jumpscare->setID("jumpscare");
 
-			jumpscare_sprite->setPosition({winSize.width / 2, winSize.height / 2});
-			runningScene->addChild(jumpscare_sprite, 9);
+			jumpscare->setPosition({winSize.width / 2, winSize.height / 2});
+			runningScene->addChild(jumpscare, 9);
 		}
 
 		if (!runningScene->getChildByID("jumpscare-background")) {
@@ -41,50 +41,59 @@ class $modify(PlayerObject) {
 
 		//scale is to make it fit to screen but
 		//i dont even fucking know anymore c++ is so fucking stupid
-		auto yscale = winSize.height / jumpscare_sprite->getContentSize().height;
-		auto xscale = winSize.width / jumpscare_sprite->getContentSize().width;
+		auto yscale = winSize.height / jumpscare->getContentSize().height;
+		auto xscale = winSize.width / jumpscare->getContentSize().width;
 		float scale;
 		if (xscale < yscale) scale = xscale;
 		else scale = yscale;
 
 		background->setOpacity(255);
-		jumpscare_sprite->setScale(scale);
+		jumpscare->setScale(scale);
 
-		jumpscare_sprite->setOpacity(255);
-		jumpscare_sprite->setScale(1);
-		jumpscare_sprite->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
-		jumpscare_sprite->runAction(CCBlink::create(0.5, 10))->setTag(2);
+		jumpscare->setOpacity(255);
+		jumpscare->setScale(1);
+		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
+		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
 		// does not fucking work
 		FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
 	}
 };
 
+// clears the jumpscare sprite when the player respawns aka the level song starts again
 class $modify(PlayLayer) {
 	TodoReturn startMusic() {
 		PlayLayer::startMusic();
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		// only set opacity if the sprite is already in the scene
 		if (runningScene->getChildByID("jumpscare")) {
-			jumpscare_sprite->setOpacity(0);
+			jumpscare->setOpacity(0);
 			background->setOpacity(0);	
 		}
 	}
 };
 
-// class $modify(PauseLayer) {
-// 	bool init(bool p0) {
-// 		if (!PauseLayer::init(p0)) return false;
 
-		
+// jumpscare animation pauses when opening pause layer
+// and resumes when closing
+class $modify(PauseLayer) {
+	TodoReturn customSetup() {
+		PauseLayer::customSetup();
 
-// 		return true;
-// 	}
+		const auto runningScene = CCDirector::get()->getRunningScene();
+		if (runningScene->getChildByID("jumpscare")) {
+			if (jumpscare->getActionByTag(1)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
+			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
+		}
+	}
 
-// };
+	void onResume(CCObject* sender) {
+		PauseLayer::onResume(sender);
 
-
-
-// int range = max - min + 1;
-// int num = rand() % range + min;
-// rand with range
+		const auto runningScene = CCDirector::get()->getRunningScene();
+		if (runningScene->getChildByID("jumpscare")) {
+			if (jumpscare->getActionByTag(1)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
+			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
+		}
+	}
+};
