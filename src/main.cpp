@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/PauseLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -56,8 +57,8 @@ class $modify(PlayerObject) {
 
 		jumpscare_sprite->setOpacity(255);
 		jumpscare_sprite->setScale(1);
-		jumpscare_sprite->runAction(CCScaleBy::create(0.2, scale))->setTag(1);
-		jumpscare_sprite->runAction(CCBlink::create(0.5, 10));
+		jumpscare_sprite->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
+		jumpscare_sprite->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
 		// does not fucking work
 		FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
@@ -74,6 +75,17 @@ class $modify(PlayLayer) {
 			background->setOpacity(0);	
 		}
 	}
+};
+
+class $modify(PauseLayer) {
+	bool init(bool p0) {
+		if (!PauseLayer::init(p0)) return false;
+
+		
+
+		return true;
+	}
+
 };
 
 
