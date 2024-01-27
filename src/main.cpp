@@ -57,7 +57,7 @@ class $modify(PlayerObject) {
 
 		// fucking works now thanks dank_meme
 		Loader::get()->queueInMainThread([] {
-			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
+			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.mp3"_spr);
 		});
 	}
 };
