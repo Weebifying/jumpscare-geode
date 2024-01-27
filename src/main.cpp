@@ -2,11 +2,21 @@
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
+#include <Geode/modify/LoadingLayer.hpp>
+
 
 using namespace geode::prelude;
 
 CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
+
+
+class $modify(LoadingLayer) {
+	void loadingFinished() {
+		LoadingLayer::loadingFinished();
+		log::info("{}", Mod::get()->getResourcesDir());
+	}
+};
 
 class $modify(PlayerObject) {
 	TodoReturn playerDestroyed(bool p0) {
@@ -57,7 +67,7 @@ class $modify(PlayerObject) {
 
 		// fucking works now thanks dank_meme
 		Loader::get()->queueInMainThread([] {
-			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
+			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.mp3"_spr);
 		});
 	}
 };

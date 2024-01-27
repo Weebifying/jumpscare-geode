@@ -8,12 +8,12 @@
 	"id": "weebify.jumpscare",
 	"name": "Jumpscare",
 	"developer": "Weebify",
-	"description": "scawwy",
+	"description": "Randomly jumpscares you when you die",
 	"resources": {
 		"files": [
 			"resources/background.png",
 			"resources/jumpscare.png",
-			"resources/jumpscareAudio.ogg"
+			"resources/jumpscareAudio.mp3"
 		]
 	},
 	"settings": {
