@@ -55,15 +55,18 @@ class $modify(PlayerObject) {
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
 		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
-		// does not fucking work
-		FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
+		// fucking works now thanks dank_meme
+		Loader::get()->queueInMainThread([] {
+			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.ogg"_spr);
+		});
 	}
 };
 
-// clears the jumpscare sprite when the player respawns aka the level song starts again
+// clears the jumpscare sprite when the player respawns
 class $modify(PlayLayer) {
-	TodoReturn startMusic() {
-		PlayLayer::startMusic();
+	// i love mat :pray:
+	TodoReturn resetLevel() {
+		PlayLayer::resetLevel();
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		// only set opacity if the sprite is already in the scene
 		if (runningScene->getChildByID("jumpscare")) {
