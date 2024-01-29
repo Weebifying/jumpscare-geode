@@ -17,9 +17,12 @@ class $modify(LoadingLayer) {
 		auto configDir = Mod::get()->getConfigDir();
 		auto resourcesDir = Mod::get()->getResourcesDir();
 		if (!ghc::filesystem::exists(configDir / "jumpscare.png")) {
-			log::info("doesnt exist owo");
 			ghc::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
+		}
+		if (!ghc::filesystem::exists(configDir / "background.png")) {
 			ghc::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
+		}
+		if (!ghc::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
 			ghc::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
 		}
 	}
