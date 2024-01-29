@@ -33,6 +33,9 @@ class $modify(PlayerObject) {
     	PlayerObject::playerDestroyed(p0);
 
 		auto configDir = Mod::get()->getConfigDir();
+		
+		// check if player is NOT in level editor
+		if (!PlayLayer::get()) return;
 
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
@@ -121,4 +124,4 @@ class $modify(PauseLayer) {
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 		}
 	}
-};
+};	
