@@ -14,13 +14,22 @@ CCSprite* background = NULL;
 class $modify(LoadingLayer) {
 	void loadingFinished() {
 		LoadingLayer::loadingFinished();
-		log::info("{}", Mod::get()->getResourcesDir());
+		auto configDir = Mod::get()->getConfigDir();
+		auto resourcesDir = Mod::get()->getResourcesDir();
+		if (!ghc::filesystem::exists(configDir / "jumpscare.png")) {
+			log::info("doesnt exist owo");
+			ghc::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
+			ghc::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
+			ghc::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
+		}
 	}
 };
 
 class $modify(PlayerObject) {
 	TodoReturn playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
+
+		auto configDir = Mod::get()->getConfigDir();
 
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
@@ -31,7 +40,7 @@ class $modify(PlayerObject) {
 		auto winSize = CCDirector::get()->getWinSize();
 
 		if (!runningScene->getChildByID("jumpscare")) {
-			jumpscare = CCSprite::create("jumpscare.png"_spr);
+			jumpscare = CCSprite::create((configDir / "jumpscare.png").string().c_str());
 			jumpscare->setID("jumpscare");
 
 			jumpscare->setPosition({winSize.width / 2, winSize.height / 2});
@@ -39,7 +48,7 @@ class $modify(PlayerObject) {
 		}
 
 		if (!runningScene->getChildByID("jumpscare-background")) {
-			background = CCSprite::create("background.png"_spr);
+			background = CCSprite::create((configDir / "background.png").string().c_str());
 			background->setID("jumpscare-background");
 			// scale to screen
 			background->setScaleX(winSize.width / background->getContentSize().width);
@@ -66,8 +75,8 @@ class $modify(PlayerObject) {
 		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
 		// fucking works now thanks dank_meme
-		Loader::get()->queueInMainThread([] {
-			FMODAudioEngine::sharedEngine()->playEffect("jumpscareAudio.mp3"_spr);
+		Loader::get()->queueInMainThread([configDir] {
+			FMODAudioEngine::sharedEngine()->playEffect((configDir / "jumpscareAudio.mp3").string().c_str());
 		});
 	}
 };
