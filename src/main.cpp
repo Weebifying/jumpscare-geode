@@ -44,6 +44,14 @@ class $modify(PlayerObject) {
 		auto chance = Mod::get()->getSettingValue<double>("chance");
 		if (rand()/(RAND_MAX+1.0) > chance/100) return;
 
+		// after percentage check
+		// doesnt work for platformer :D
+		if (PlayLayer::get()->getCurrentPercentInt() < Mod::get()->getSettingValue<int64_t>("from_percent")) return;
+
+		// only from 0 check
+		if (Mod::get()->getSettingValue<bool>("only_from_0"))
+			if (PlayLayer::get()->m_isPracticeMode or PlayLayer::get()->m_isTestMode) return;
+
 		// thanks nicknamegg
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		auto winSize = CCDirector::get()->getWinSize();
@@ -75,10 +83,10 @@ class $modify(PlayerObject) {
 		if (xscale < yscale) scale = xscale;
 		else scale = yscale;
 
-		background->setOpacity(255);
+		background->setVisible(true);
 		jumpscare->setScale(scale);
 
-		jumpscare->setOpacity(255);
+		jumpscare->setVisible(true);
 		jumpscare->setScale(1);
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
 		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
@@ -96,10 +104,10 @@ class $modify(PlayLayer) {
 	TodoReturn resetLevel() {
 		PlayLayer::resetLevel();
 		const auto runningScene = CCDirector::get()->getRunningScene();
-		// only set opacity if the sprite is already in the scene
+		// only set invisible if the sprite is already in the scene
 		if (runningScene->getChildByID("jumpscare")) {
-			jumpscare->setOpacity(0);
-			background->setOpacity(0);	
+			background->setVisible(false);	
+			jumpscare->setVisible(false);
 		}
 	}
 };
