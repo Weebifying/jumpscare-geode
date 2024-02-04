@@ -14,16 +14,16 @@ CCSprite* background = NULL;
 class $modify(LoadingLayer) {
 	void loadingFinished() {
 		LoadingLayer::loadingFinished();
-		auto configDir = Mod::get()->getConfigDir();
-		auto resourcesDir = Mod::get()->getResourcesDir();
-		if (!ghc::filesystem::exists(configDir / "jumpscare.png")) {
-			ghc::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
+		std::filesystem::path configDir = Mod::get()->getConfigDir().string();
+		std::filesystem::path resourcesDir = Mod::get()->getResourcesDir().string();
+		if (!std::filesystem::exists(configDir / "jumpscare.png")) {
+			std::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
 		}
-		if (!ghc::filesystem::exists(configDir / "background.png")) {
-			ghc::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
+		if (!std::filesystem::exists(configDir / "background.png")) {
+			std::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
 		}
-		if (!ghc::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
-			ghc::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
+		if (!std::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
+			std::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
 		}
 	}
 };
@@ -34,6 +34,9 @@ class $modify(PlayerObject) {
 
 		auto configDir = Mod::get()->getConfigDir();
 		
+		log::info("{}", PlayLayer::get()->getCurrentPercentInt());
+		log::info("{}", PlayLayer::get()->m_isPracticeMode);
+		log::info("{}", PlayLayer::get()->m_isTestMode);
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
 
