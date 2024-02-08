@@ -11,47 +11,36 @@ CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
 
 
-class $modify(LoadingLayer) {
-	void loadingFinished() {
-		LoadingLayer::loadingFinished();
-		std::filesystem::path configDir = Mod::get()->getConfigDir().string();
-		std::filesystem::path resourcesDir = Mod::get()->getResourcesDir().string();
-		if (!std::filesystem::exists(configDir / "jumpscare.png")) {
-			std::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
-		}
-		if (!std::filesystem::exists(configDir / "background.png")) {
-			std::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
-		}
-		if (!std::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
-			std::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
-		}
+$on_mod(Loaded) {
+	std::filesystem::path configDir = Mod::get()->getConfigDir().string();
+	std::filesystem::path resourcesDir = Mod::get()->getResourcesDir().string();
+	if (!std::filesystem::exists(configDir / "jumpscare.png")) {
+		std::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
 	}
-};
+	if (!std::filesystem::exists(configDir / "background.png")) {
+		std::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
+	}
+	if (!std::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
+		std::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
+	}
+}
 
 class $modify(PlayerObject) {
 	TodoReturn playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
-
-		auto configDir = Mod::get()->getConfigDir();
 		
-		log::info("{}", PlayLayer::get()->getCurrentPercentInt());
-		log::info("{}", PlayLayer::get()->m_isPracticeMode);
-		log::info("{}", PlayLayer::get()->m_isTestMode);
+		std::filesystem::path configDir = Mod::get()->getConfigDir().string();
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
-
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
 		if (rand()/(RAND_MAX+1.0) > chance/100) return;
-
 		// after percentage check
 		// doesnt work for platformer :D
 		if (PlayLayer::get()->getCurrentPercentInt() < Mod::get()->getSettingValue<int64_t>("from_percent")) return;
-
 		// only from 0 check
 		if (Mod::get()->getSettingValue<bool>("only_from_0"))
 			if (PlayLayer::get()->m_isPracticeMode or PlayLayer::get()->m_isTestMode) return;
-
 		// thanks nicknamegg
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		auto winSize = CCDirector::get()->getWinSize();
