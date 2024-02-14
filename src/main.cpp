@@ -10,8 +10,9 @@ using namespace geode::prelude;
 CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
 
-
 $on_mod(Loaded) {
+	srand((unsigned int)time(NULL));
+	
 	std::filesystem::path configDir = Mod::get()->getConfigDir().string();
 	std::filesystem::path resourcesDir = Mod::get()->getResourcesDir().string();
 	if (!std::filesystem::exists(configDir / "jumpscare.png")) {
