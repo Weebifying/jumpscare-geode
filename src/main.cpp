@@ -9,6 +9,8 @@ using namespace geode::prelude;
 
 CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
+int currentSecond = 0;
+int currentMilisecond = 0;
 
 $on_mod(Loaded) {
 	srand((unsigned int)time(NULL));
@@ -31,17 +33,27 @@ class $modify(PlayerObject) {
     	PlayerObject::playerDestroyed(p0);
 		
 		std::filesystem::path configDir = Mod::get()->getConfigDir().string();
+
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
+
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
-		if (rand()/(RAND_MAX+1.0) > chance/100) return;
-		// after percentage check
-		// doesnt work for platformer :D
-		if (PlayLayer::get()->getCurrentPercentInt() < Mod::get()->getSettingValue<int64_t>("from_percent")) return;
+		if (rand()/(RAND_MAX+1.0) > chance/10) return;
+
+		// after percentage/time check
+		if (PlayLayer::get()->m_level->isPlatformer()) {
+			log::info("{}.{}", currentSecond, currentMilisecond);
+			if (currentSecond + currentMilisecond/100 < Mod::get()->getSettingValue<double>("from_time")) return;
+		} else {
+			log::info("{}", PlayLayer::get()->getCurrentPercent());
+			if (PlayLayer::get()->getCurrentPercent() < Mod::get()->getSettingValue<double>("from_percent")) return;
+		}
+		
 		// only from 0 check
 		if (Mod::get()->getSettingValue<bool>("only_from_0"))
 			if (PlayLayer::get()->m_isPracticeMode or PlayLayer::get()->m_isTestMode) return;
+
 		// thanks nicknamegg
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		auto winSize = CCDirector::get()->getWinSize();
@@ -65,8 +77,8 @@ class $modify(PlayerObject) {
 			runningScene->addChild(background, 8);
 		}
 
-		//scale is to make it fit to screen but
-		//i dont even fucking know anymore c++ is so fucking stupid
+		// scale is to make it fit to screen but
+		// i dont even fucking know anymore c++ is so stupid
 		auto yscale = winSize.height / jumpscare->getContentSize().height;
 		auto xscale = winSize.width / jumpscare->getContentSize().width;
 		float scale;
@@ -99,6 +111,13 @@ class $modify(PlayLayer) {
 			background->setVisible(false);	
 			jumpscare->setVisible(false);
 		}
+	}
+
+	void updateTimeLabel(int p0, int p1, bool p2) {
+		PlayLayer::updateTimeLabel(p0, p1, p2);
+		currentSecond = p0;
+		currentMilisecond = p1;
+		// log::debug("updateTimeLabel({}, {}, {}) called!", p0, p1, p2);
 	}
 };
 
