@@ -39,7 +39,7 @@ class $modify(PlayerObject) {
 
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
-		if (rand()/(RAND_MAX+1.0) > chance/10) return;
+		if (rand()/(RAND_MAX+1.0) > chance/100) return;
 
 		// after percentage/time check
 		if (PlayLayer::get()->m_level->isPlatformer()) {
