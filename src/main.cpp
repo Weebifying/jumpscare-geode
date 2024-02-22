@@ -63,7 +63,6 @@ class $modify(PlayerObject) {
 			jumpscare->setID("jumpscare");
 
 			jumpscare->setPosition({winSize.width / 2, winSize.height / 2});
-			runningScene->addChild(jumpscare, 9);
 		}
 
 		if (!runningScene->getChildByID("jumpscare-background")) {
@@ -74,7 +73,6 @@ class $modify(PlayerObject) {
 			background->setScaleY(winSize.height / background->getContentSize().height);
 
 			background->setPosition({winSize.width / 2, winSize.height / 2});
-			runningScene->addChild(background, 8);
 		}
 
 		// scale is to make it fit to screen but
@@ -85,10 +83,9 @@ class $modify(PlayerObject) {
 		if (xscale < yscale) scale = xscale;
 		else scale = yscale;
 
-		background->setVisible(true);
-		jumpscare->setScale(scale);
+		runningScene->addChild(background, 8);
+		runningScene->addChild(jumpscare, 9);
 
-		jumpscare->setVisible(true);
 		jumpscare->setScale(1);
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
 		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
@@ -108,8 +105,8 @@ class $modify(PlayLayer) {
 		const auto runningScene = CCDirector::get()->getRunningScene();
 		// only set invisible if the sprite is already in the scene
 		if (runningScene->getChildByID("jumpscare")) {
-			background->setVisible(false);	
-			jumpscare->setVisible(false);
+			runningScene->removeChild(background);
+			runningScene->removeChild(jumpscare);
 		}
 	}
 
@@ -144,4 +141,4 @@ class $modify(PauseLayer) {
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 		}
 	}
-};	
+};
