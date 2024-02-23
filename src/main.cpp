@@ -119,15 +119,15 @@ class $modify(AltPlayerObject, PlayerObject) {
 // clears the jumpscare sprite when the player respawns
 class $modify(PlayLayer) {
 
-	// void resetLevel() {
-	// 	PlayLayer::resetLevel();
-	// 	const auto runningScene = CCDirector::get()->getRunningScene();
-	// 	// only set invisible if the sprite is already in the scene
-	// 	if (runningScene->getChildByID("jumpscare")) {
-	// 		runningScene->removeChild(background);
-	// 		runningScene->removeChild(jumpscare);	
-	// 	}
-	// }
+	void resetLevel() {
+		PlayLayer::resetLevel();
+		const auto runningScene = CCDirector::get()->getRunningScene();
+		// only set invisible if the sprite is already in the scene
+		if (runningScene->getChildByID("jumpscare")) {
+			runningScene->removeChild(background);
+			runningScene->removeChild(jumpscare);	
+		}
+	}
 
 	void updateTimeLabel(int p0, int p1, bool p2) {
 		PlayLayer::updateTimeLabel(p0, p1, p2);
