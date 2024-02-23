@@ -2,7 +2,7 @@
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/modify/LoadingLayer.hpp>
+#include <Geode/modify/FMODAudioEngine.hpp>
 
 
 using namespace geode::prelude;
@@ -161,5 +161,12 @@ class $modify(PauseLayer) {
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 			if (jumpscare->getActionByTag(3)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 		}
+	}
+};
+
+class $modify(FMODAudioEngine) {
+	void playEffect(gd::string p0, float p1, float p2, float p3) {
+		FMODAudioEngine::playEffect(p0, p1, p2, p3);
+		log::info("FMODAudioEngine({}, {}, {}, {})", p0, p1, p2, p3);
 	}
 };

@@ -13,7 +13,7 @@
 		"files": [
 			"resources/background.png",
 			"resources/jumpscare.png",
-			"resources/jumpscareAudio.mp3"
+			"resources/jumpscareAudio.ogg"
 		]
 	},
 	"settings": {
@@ -42,8 +42,14 @@
 		"only_from_0": {
 			"name": "Only from 0%",
 			"type": "bool",
-			"description": "The jumpscare won't get triggered if you are in practice or testmode",
+			"description": "Whether the jumpscare gets triggered if you are in practice/testmode or not",
 			"default": false
+		},
+		"full_volume": {
+			"name": "Full Volume",
+			"type": "bool",
+			"description": "Whether the jumpscare plays at full volume or your current sfx volume",
+			"default": true
 		}
 	}
 }
