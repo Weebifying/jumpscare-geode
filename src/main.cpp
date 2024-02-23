@@ -28,7 +28,17 @@ $on_mod(Loaded) {
 	}
 }
 
-class $modify(PlayerObject) {
+class $modify(AltPlayerObject, PlayerObject) {
+	
+	void removeJumpscare() {
+		const auto runningScene = CCDirector::get()->getRunningScene();
+		// only set invisible if the sprite is already in the scene
+		if (runningScene->getChildByID("jumpscare")) {
+			runningScene->removeChild(background);
+			runningScene->removeChild(jumpscare);
+		}
+	}
+
 	TodoReturn playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
 		
@@ -43,10 +53,10 @@ class $modify(PlayerObject) {
 
 		// after percentage/time check
 		if (PlayLayer::get()->m_level->isPlatformer()) {
-			log::info("{}.{}", currentSecond, currentMilisecond);
+			log::info("{}.{}s", currentSecond, currentMilisecond);
 			if (currentSecond + currentMilisecond/100 < Mod::get()->getSettingValue<double>("from_time")) return;
 		} else {
-			log::info("{}", PlayLayer::get()->getCurrentPercent());
+			log::info("{}%", PlayLayer::get()->getCurrentPercent());
 			if (PlayLayer::get()->getCurrentPercent() < Mod::get()->getSettingValue<double>("from_percent")) return;
 		}
 		
@@ -94,21 +104,30 @@ class $modify(PlayerObject) {
 		Loader::get()->queueInMainThread([configDir] {
 			FMODAudioEngine::sharedEngine()->playEffect((configDir / "jumpscareAudio.mp3").string().c_str());
 		});
+
+		jumpscare->runAction(
+			CCSequence::create(
+				CCDelayTime::create(1.0),
+				CCCallFunc::create(runningScene, callfunc_selector(AltPlayerObject::removeJumpscare)),
+				nullptr
+			)
+		)->setTag(3);
+		
 	}
 };
 
 // clears the jumpscare sprite when the player respawns
 class $modify(PlayLayer) {
-	// i love mat :pray:
-	TodoReturn resetLevel() {
-		PlayLayer::resetLevel();
-		const auto runningScene = CCDirector::get()->getRunningScene();
-		// only set invisible if the sprite is already in the scene
-		if (runningScene->getChildByID("jumpscare")) {
-			runningScene->removeChild(background);
-			runningScene->removeChild(jumpscare);
-		}
-	}
+
+	// void resetLevel() {
+	// 	PlayLayer::resetLevel();
+	// 	const auto runningScene = CCDirector::get()->getRunningScene();
+	// 	// only set invisible if the sprite is already in the scene
+	// 	if (runningScene->getChildByID("jumpscare")) {
+	// 		runningScene->removeChild(background);
+	// 		runningScene->removeChild(jumpscare);	
+	// 	}
+	// }
 
 	void updateTimeLabel(int p0, int p1, bool p2) {
 		PlayLayer::updateTimeLabel(p0, p1, p2);
@@ -129,6 +148,7 @@ class $modify(PauseLayer) {
 		if (runningScene->getChildByID("jumpscare")) {
 			if (jumpscare->getActionByTag(1)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
+			if (jumpscare->getActionByTag(3)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
 		}
 	}
 
@@ -139,6 +159,7 @@ class $modify(PauseLayer) {
 		if (runningScene->getChildByID("jumpscare")) {
 			if (jumpscare->getActionByTag(1)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
+			if (jumpscare->getActionByTag(3)) CCDirector::get()->getActionManager()->resumeTarget(jumpscare);
 		}
 	}
 };
