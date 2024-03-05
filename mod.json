@@ -46,6 +46,12 @@
 			"type": "bool",
 			"description": "The jumpscare won't get triggered if you are in practice or testmode",
 			"default": false
+		},
+		"full_volume": {
+			"name": "Full volume",
+			"type": "bool",
+			"description": "The jumpscare's audio will play at full volume or depends on the sfx slider",
+			"default": false
 		}
 	}
 }

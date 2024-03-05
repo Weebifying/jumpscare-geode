@@ -53,10 +53,10 @@ class $modify(AltPlayerObject, PlayerObject) {
 
 		// after percentage/time check
 		if (PlayLayer::get()->m_level->isPlatformer()) {
-			log::info("{}.{}s", currentSecond, currentMilisecond);
+			// log::info("{}.{}s", currentSecond, currentMilisecond);
 			if (currentSecond + currentMilisecond/100 < Mod::get()->getSettingValue<double>("from_time")) return;
 		} else {
-			log::info("{}%", PlayLayer::get()->getCurrentPercent());
+			// log::info("{}%", PlayLayer::get()->getCurrentPercent());
 			if (PlayLayer::get()->getCurrentPercent() < Mod::get()->getSettingValue<double>("from_percent")) return;
 		}
 		
@@ -93,8 +93,8 @@ class $modify(AltPlayerObject, PlayerObject) {
 		if (xscale < yscale) scale = xscale;
 		else scale = yscale;
 
-		runningScene->addChild(background, 8);
-		runningScene->addChild(jumpscare, 9);
+		if (!runningScene->getChildByID("jumpscare-background")) runningScene->addChild(background, 8);
+		if (!runningScene->getChildByID("jumpscare")) runningScene->addChild(jumpscare, 9);
 
 		jumpscare->setScale(1);
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
@@ -102,7 +102,23 @@ class $modify(AltPlayerObject, PlayerObject) {
 
 		// fucking works now thanks dank_meme
 		Loader::get()->queueInMainThread([configDir] {
-			FMODAudioEngine::sharedEngine()->playEffect((configDir / "jumpscareAudio.mp3").string().c_str());
+			if (Mod::get()->getSettingValue<bool>("full_volume")) {
+				// thanks zmx
+				auto fmae = FMODAudioEngine::sharedEngine();
+				auto system = fmae->m_system;
+
+				FMOD::Channel* channel;
+				FMOD::Sound* sound;
+
+				// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
+				system->createSound((configDir / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
+				system->playSound(sound, nullptr, false, &channel);
+
+			} else {
+				FMODAudioEngine::sharedEngine()->playEffect((configDir / "jumpscareAudio.mp3").string().c_str());
+			}
+
+
 		});
 
 		jumpscare->runAction(
