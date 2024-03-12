@@ -1,10 +1,10 @@
 {
-	"geode": "2.0.0-beta.21",
+	"geode": "2.0.0-beta.22",
 	"gd": {
 		"win": "2.204",
 		"android": "2.205"
 	},
-	"version": "v1.2.1",
+	"version": "v1.3.0",
 	"id": "weebify.jumpscare",
 	"name": "Jumpscare",
 	"developer": "Weebify",
@@ -44,13 +44,13 @@
 		"only_from_0": {
 			"name": "Only from 0%",
 			"type": "bool",
-			"description": "The jumpscare won't get triggered if you are in practice or testmode",
+			"description": "If enabled, the jumpscare won't get triggered if you are in practice or testmode",
 			"default": false
 		},
 		"full_volume": {
 			"name": "Full volume",
 			"type": "bool",
-			"description": "The jumpscare's audio will play at full volume or depends on the sfx slider",
+			"description": "If enabled, the jumpscare's audio will play at full volume",
 			"default": false
 		}
 	}

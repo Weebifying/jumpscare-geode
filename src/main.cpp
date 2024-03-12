@@ -4,28 +4,54 @@
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
 
+#include <random>
 
 using namespace geode::prelude;
+namespace fs = std::filesystem;
 
 CCSprite* jumpscare = NULL;
 CCSprite* background = NULL;
 int currentSecond = 0;
 int currentMilisecond = 0;
 
+std::vector<fs::path> getJumpscareSubDir(fs::path path) {
+	std::vector<fs::path> ret;
+	for (auto& child : fs::directory_iterator(path)) 
+		if (fs::is_directory(child)) 
+			if (fs::exists(child.path() / "jumpscare.png") && fs::exists(child.path() / "jumpscareAudio.mp3"))
+				ret.push_back(child.path());
+	return ret;
+}
+
 $on_mod(Loaded) {
-	srand((unsigned int)time(NULL));
+	// Mod::get()->addCustomSetting<CustomNode>("jumpscare_in_use", "balls");
 	
-	std::filesystem::path configDir = Mod::get()->getConfigDir().string();
-	std::filesystem::path resourcesDir = Mod::get()->getResourcesDir().string();
-	if (!std::filesystem::exists(configDir / "jumpscare.png")) {
-		std::filesystem::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare.png");
+	fs::path configDir = Mod::get()->getConfigDir().string();
+	fs::path resourcesDir = Mod::get()->getResourcesDir().string();
+
+	std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
+			
+	if (jumpscareDirs.size() == 0) {
+		if (!fs::exists(configDir / "jumpscare")) 
+			fs::create_directory(configDir / "jumpscare");
+		
+		if (!fs::exists(configDir / "jumpscare" / "jumpscare.png")) {
+			if (fs::exists(configDir / "jumpscare.png")) 
+				fs::rename(configDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
+			else
+				fs::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
+		}
+		
+		if (!fs::exists(configDir / "jumpscare" / "jumpscareAudio.mp3")) {
+			if (fs::exists(configDir / "jumpscareAudio.mp3"))
+				fs::rename(configDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
+			else
+				fs::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
+		}
 	}
-	if (!std::filesystem::exists(configDir / "background.png")) {
-		std::filesystem::copy(resourcesDir / "background.png", configDir / "background.png");
-	}
-	if (!std::filesystem::exists(configDir / "jumpscareAudio.mp3")) {
-		std::filesystem::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscareAudio.mp3");
-	}
+	
+	if (!fs::exists(configDir / "background.png"))
+		fs::copy(resourcesDir / "background.png", configDir / "background.png");
 }
 
 class $modify(AltPlayerObject, PlayerObject) {
@@ -41,15 +67,26 @@ class $modify(AltPlayerObject, PlayerObject) {
 
 	TodoReturn playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
+
+		log::warn("fmae: {}", FMODAudioEngine::sharedEngine()->m_sfxVolume);
+		log::warn("gm: {}", GameManager::get()->m_sfxVolume);
+
+		std::random_device rd;
+    	std::mt19937 gen(rd());
 		
-		std::filesystem::path configDir = Mod::get()->getConfigDir().string();
+		fs::path configDir = Mod::get()->getConfigDir().string();
+
+		std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
+		std::vector<fs::path> chosenDir(1);
+		std::sample(jumpscareDirs.begin(), jumpscareDirs.end(), chosenDir.begin(), 1, gen);
 
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
 
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
-		if (rand()/(RAND_MAX+1.0) > chance/100) return;
+		std::uniform_real_distribution<float> distrib(0.f, 100.f);
+		if (distrib(gen) > chance) return;
 
 		// after percentage/time check
 		if (PlayLayer::get()->m_level->isPlatformer()) {
@@ -69,7 +106,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 		auto winSize = CCDirector::get()->getWinSize();
 
 		if (!runningScene->getChildByID("jumpscare")) {
-			jumpscare = CCSprite::create((configDir / "jumpscare.png").string().c_str());
+			jumpscare = CCSprite::create((chosenDir.front() / "jumpscare.png").string().c_str());
 			jumpscare->setID("jumpscare");
 
 			jumpscare->setPosition({winSize.width / 2, winSize.height / 2});
@@ -100,25 +137,20 @@ class $modify(AltPlayerObject, PlayerObject) {
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
 		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
-		// fucking works now thanks dank_meme
-		Loader::get()->queueInMainThread([configDir] {
-			if (Mod::get()->getSettingValue<bool>("full_volume")) {
-				// thanks zmx
-				auto fmae = FMODAudioEngine::sharedEngine();
-				auto system = fmae->m_system;
+		// fucking works now thanks dank_meme and zmx
+		Loader::get()->queueInMainThread([chosenDir] {
+			auto fmae = FMODAudioEngine::sharedEngine();
+			auto system = fmae->m_system;
 
-				FMOD::Channel* channel;
-				FMOD::Sound* sound;
+			FMOD::Channel* channel;
+			FMOD::Sound* sound;
 
-				// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
-				system->createSound((configDir / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
-				system->playSound(sound, nullptr, false, &channel);
+			// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
+			system->createSound((chosenDir.front() / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
+			system->playSound(sound, nullptr, false, &channel);
 
-			} else {
-				FMODAudioEngine::sharedEngine()->playEffect((configDir / "jumpscareAudio.mp3").string().c_str());
-			}
-
-
+			if (!Mod::get()->getSettingValue<bool>("full_volume"))
+				channel->setVolume(fmae->m_sfxVolume);
 		});
 
 		jumpscare->runAction(
@@ -128,13 +160,11 @@ class $modify(AltPlayerObject, PlayerObject) {
 				nullptr
 			)
 		)->setTag(3);
-		
 	}
 };
 
 // clears the jumpscare sprite when the player respawns
 class $modify(PlayLayer) {
-
 	void resetLevel() {
 		PlayLayer::resetLevel();
 		const auto runningScene = CCDirector::get()->getRunningScene();
