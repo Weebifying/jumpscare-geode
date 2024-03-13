@@ -53,6 +53,11 @@
 			"type": "bool",
 			"description": "If enabled, the jumpscare's audio will play at full volume",
 			"default": false
+		},
+		"disable_blink": {
+			"name": "Disable blinking effect",
+			"type": "bool",
+			"default": false
 		}
 	}
 }

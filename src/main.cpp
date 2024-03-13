@@ -158,7 +158,9 @@ class $modify(AltPlayerObject, PlayerObject) {
 
 		jumpscare->setScale(1);
 		jumpscare->runAction(CCScaleBy::create(0.2, scale))->setTag(1);	
-		jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
+
+		if (!Mod::get()->getSettingValue<bool>("disable_blink"))
+			jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
 		// fucking works now thanks dank_meme and zmx
 		Loader::get()->queueInMainThread([chosenDir] {
