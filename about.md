@@ -28,4 +28,5 @@ config/weebify.jumpscare/
 ```
 
 # Special thanks to:
-- [CatXus](user:14467409), for testing this mod on Android for me :D
+- [CatXus](user:14467409) and [Jaid](user:7669473), for testing this mod on Android!
+- [Prevter](user:7696536), for testing this mod on MacOS!

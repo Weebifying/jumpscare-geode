@@ -72,8 +72,34 @@ class $modify(AltPlayerObject, PlayerObject) {
     	std::mt19937 gen(rd());
 		
 		fs::path configDir = Mod::get()->getConfigDir().string();
+		fs::path resourcesDir = Mod::get()->getResourcesDir().string();
 
 		std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
+
+		if (jumpscareDirs.size() == 0) {
+			if (!fs::exists(configDir / "jumpscare")) 
+				fs::create_directory(configDir / "jumpscare");
+			
+			if (!fs::exists(configDir / "jumpscare" / "jumpscare.png")) {
+				if (fs::exists(configDir / "jumpscare.png")) 
+					fs::rename(configDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
+				else
+					fs::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
+			}
+			
+			if (!fs::exists(configDir / "jumpscare" / "jumpscareAudio.mp3")) {
+				if (fs::exists(configDir / "jumpscareAudio.mp3"))
+					fs::rename(configDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
+				else
+					fs::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
+			}
+
+			jumpscareDirs.push_back(configDir / "jumpscare");
+		}
+
+		if (!fs::exists(configDir / "background.png"))
+			fs::copy(resourcesDir / "background.png", configDir / "background.png");
+
 		std::vector<fs::path> chosenDir(1);
 		std::sample(jumpscareDirs.begin(), jumpscareDirs.end(), chosenDir.begin(), 1, gen);
 
