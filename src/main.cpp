@@ -65,11 +65,8 @@ class $modify(AltPlayerObject, PlayerObject) {
 		}
 	}
 
-	TodoReturn playerDestroyed(bool p0) {
+	void playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
-
-		log::warn("fmae: {}", FMODAudioEngine::sharedEngine()->m_sfxVolume);
-		log::warn("gm: {}", GameManager::get()->m_sfxVolume);
 
 		std::random_device rd;
     	std::mt19937 gen(rd());
@@ -150,7 +147,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 			system->playSound(sound, nullptr, false, &channel);
 
 			if (!Mod::get()->getSettingValue<bool>("full_volume"))
-				channel->setVolume(fmae->m_sfxVolume);
+				channel->setVolume(fmae->getEffectsVolume());
 		});
 
 		jumpscare->runAction(

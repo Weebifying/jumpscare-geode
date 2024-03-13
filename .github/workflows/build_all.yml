@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "main"
+      - "**"
 
 jobs:
   build:
@@ -15,8 +15,8 @@ jobs:
         - name: Windows
           os: windows-latest
 
-        # - name: macOS
-        #   os: macos-latest
+        - name: macOS
+          os: macos-latest
 
         - name: Android32
           os: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
         with:
           combine: true
           target: ${{ matrix.config.target }}
-          
+
   package:
     name: Package builds
     runs-on: ubuntu-latest
