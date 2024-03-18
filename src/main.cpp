@@ -3,8 +3,11 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 
 #include <random>
+#include "utils.hpp"
+#include "JumpscareValue.hpp"
 
 using namespace geode::prelude;
 namespace fs = std::filesystem;
@@ -14,41 +17,12 @@ CCSprite* background = NULL;
 int currentSecond = 0;
 int currentMilisecond = 0;
 
-std::vector<fs::path> getJumpscareSubDir(fs::path path) {
-	std::vector<fs::path> ret;
-	for (auto& child : fs::directory_iterator(path)) 
-		if (fs::is_directory(child)) 
-			if (fs::exists(child.path() / "jumpscare.png") && fs::exists(child.path() / "jumpscareAudio.mp3"))
-				ret.push_back(child.path());
-	return ret;
-}
 
 $on_mod(Loaded) {
-	// Mod::get()->addCustomSetting<CustomNode>("jumpscare_in_use", "balls");
-	
 	fs::path configDir = Mod::get()->getConfigDir().string();
 	fs::path resourcesDir = Mod::get()->getResourcesDir().string();
 
 	std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
-			
-	if (jumpscareDirs.size() == 0) {
-		if (!fs::exists(configDir / "jumpscare")) 
-			fs::create_directory(configDir / "jumpscare");
-		
-		if (!fs::exists(configDir / "jumpscare" / "jumpscare.png")) {
-			if (fs::exists(configDir / "jumpscare.png")) 
-				fs::rename(configDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
-			else
-				fs::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
-		}
-		
-		if (!fs::exists(configDir / "jumpscare" / "jumpscareAudio.mp3")) {
-			if (fs::exists(configDir / "jumpscareAudio.mp3"))
-				fs::rename(configDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
-			else
-				fs::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
-		}
-	}
 	
 	if (!fs::exists(configDir / "background.png"))
 		fs::copy(resourcesDir / "background.png", configDir / "background.png");
@@ -68,41 +42,26 @@ class $modify(AltPlayerObject, PlayerObject) {
 	void playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
 
-		std::random_device rd;
-    	std::mt19937 gen(rd());
-		
 		fs::path configDir = Mod::get()->getConfigDir().string();
 		fs::path resourcesDir = Mod::get()->getResourcesDir().string();
+		fs::path dir;
 
+		std::random_device rd;
+		std::mt19937 gen(rd());
 		std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
-
-		if (jumpscareDirs.size() == 0) {
-			if (!fs::exists(configDir / "jumpscare")) 
-				fs::create_directory(configDir / "jumpscare");
-			
-			if (!fs::exists(configDir / "jumpscare" / "jumpscare.png")) {
-				if (fs::exists(configDir / "jumpscare.png")) 
-					fs::rename(configDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
-				else
-					fs::copy(resourcesDir / "jumpscare.png", configDir / "jumpscare" / "jumpscare.png");
-			}
-			
-			if (!fs::exists(configDir / "jumpscare" / "jumpscareAudio.mp3")) {
-				if (fs::exists(configDir / "jumpscareAudio.mp3"))
-					fs::rename(configDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
-				else
-					fs::copy(resourcesDir / "jumpscareAudio.mp3", configDir / "jumpscare" / "jumpscareAudio.mp3");
-			}
-
-			jumpscareDirs.push_back(configDir / "jumpscare");
-		}
 
 		if (!fs::exists(configDir / "background.png"))
 			fs::copy(resourcesDir / "background.png", configDir / "background.png");
 
-		std::vector<fs::path> chosenDir(1);
-		std::sample(jumpscareDirs.begin(), jumpscareDirs.end(), chosenDir.begin(), 1, gen);
-
+		if (Mod::get()->getSettingValue<bool>("randomize")) {
+			std::vector<fs::path> chosenDir(1);
+			std::sample(jumpscareDirs.begin(), jumpscareDirs.end(), chosenDir.begin(), 1, gen);
+			dir = chosenDir.front();
+		} else {
+			dir = as<JumpscareValue*>(Mod::get()->getSetting("jumpscare_in_use"))->getJumpscare();
+			log::info("{}", dir.string());
+		}
+		
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
 
@@ -129,7 +88,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 		auto winSize = CCDirector::get()->getWinSize();
 
 		if (!runningScene->getChildByID("jumpscare")) {
-			jumpscare = CCSprite::create((chosenDir.front() / "jumpscare.png").string().c_str());
+			jumpscare = CCSprite::create((dir / "jumpscare.png").string().c_str());
 			jumpscare->setID("jumpscare");
 
 			jumpscare->setPosition({winSize.width / 2, winSize.height / 2});
@@ -163,7 +122,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 			jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
 		// fucking works now thanks dank_meme and zmx
-		Loader::get()->queueInMainThread([chosenDir] {
+		Loader::get()->queueInMainThread([dir] {
 			auto fmae = FMODAudioEngine::sharedEngine();
 			auto system = fmae->m_system;
 
@@ -171,7 +130,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 			FMOD::Sound* sound;
 
 			// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
-			system->createSound((chosenDir.front() / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
+			system->createSound((dir / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
 			system->playSound(sound, nullptr, false, &channel);
 
 			if (!Mod::get()->getSettingValue<bool>("full_volume"))
@@ -211,8 +170,12 @@ class $modify(PlayLayer) {
 
 // jumpscare animation pauses when opening pause layer
 // and resumes when closing
-class $modify(PauseLayer) {
-	TodoReturn customSetup() {
+class $modify(MyPauseLayer, PauseLayer) {
+	void onButton(CCObject*) {
+		openSettingsPopup(Mod::get());
+	}
+
+	void customSetup() {
 		PauseLayer::customSetup();
 
 		const auto runningScene = CCDirector::get()->getRunningScene();
@@ -220,6 +183,22 @@ class $modify(PauseLayer) {
 			if (jumpscare->getActionByTag(1)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
 			if (jumpscare->getActionByTag(2)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
 			if (jumpscare->getActionByTag(3)) CCDirector::get()->getActionManager()->pauseTarget(jumpscare);
+		}
+
+		if (Mod::get()->getSettingValue<bool>("button")) {
+			if (auto menu = this->getChildByID("right-button-menu")) {
+				auto sprite = CCSprite::create("GJ_jumpscareBtn_001.png"_spr);
+				sprite->setScale(0.8f);
+
+				auto button = CCMenuItemSpriteExtra::create(
+					sprite,
+					this,
+					menu_selector(MyPauseLayer::onButton)
+				);
+
+				menu->addChild(button);
+				menu->updateLayout();
+			}
 		}
 	}
 

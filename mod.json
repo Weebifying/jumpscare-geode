@@ -17,9 +17,29 @@
 			"resources/background.png",
 			"resources/jumpscare.png",
 			"resources/jumpscareAudio.mp3"
+		],
+		"sprites": [
+			"resources/GJ_jumpscareBtn_001.png"
 		]
 	},
+	"dependencies": [
+        {
+            "id": "geode.node-ids",
+            "version": ">=v1.8.0",
+            "importance": "required"
+        }
+    ],
 	"settings": {
+		"randomize": {
+			"name": "Randomize jumpscares",
+			"description": "If enabled, the jumpscare will be randomized between the available ones",
+			"type": "bool",
+			"default": true
+		},
+		"jumpscare_in_use": {
+			"name": "Jumpscare in use",
+            "type": "custom"
+        },
 		"chance": {
             "name": "Probability (%)",
             "type": "float",
@@ -57,6 +77,12 @@
 		"disable_blink": {
 			"name": "Disable blinking effect",
 			"type": "bool",
+			"default": false
+		},
+		"button": {
+			"name": "Show button in pause menu",
+			"type": "bool",
+			"description": "If enabled, a button that opens this settings page will appear in the pause menu",
 			"default": false
 		}
 	}
