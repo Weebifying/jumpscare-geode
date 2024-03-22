@@ -14,7 +14,8 @@ To <cr>add your own jumpscare</c>, make a new folder in the config folder and ad
 
 The assets must include 2 files: `"jumpscare.png"` for the jumpscare image, and `"jumpscareAudio.mp3"` for the jumpscare audio.
 
-Example files structure:
+### Example files structure:
+
 ![src tree](weebify.jumpscare/image.png)
 
 # Special thanks to:
