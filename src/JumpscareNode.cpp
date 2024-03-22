@@ -39,7 +39,7 @@ protected:
         inputNode->setScale(0.65f);
         inputNode->setPosition(-51.5f, 0);
         inputNode->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
-        inputNode->setEnabled(false);
+        inputNode->getInput()->setAllowedChars("");
         menu->addChild(inputNode);
 
         auto arrowRight = CCSprite::createWithSpriteFrameName("navArrowBtn_001.png");
@@ -66,8 +66,6 @@ protected:
         else 
             index++;
 
-        log::error("{}, {}", index, m_jumpscareDirs[index].filename().string());
-
         m_currentJumpscare = m_jumpscareDirs[index].string();
         getChildOfType<InputNode>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
         this->dispatchChanged();
@@ -80,8 +78,6 @@ protected:
             index = m_jumpscareDirs.size() - 1;
         else
             index--;
-
-        log::error("{}, {}", index, m_jumpscareDirs[index].filename().string());
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
         getChildOfType<InputNode>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());

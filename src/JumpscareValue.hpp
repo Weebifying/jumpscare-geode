@@ -11,7 +11,6 @@ public:
         : SettingValue(key, modID), m_jumpscare(jumpscare) {}
 
     bool load(matjson::Value const& json) override {
-        log::error("json is {}", json.is<std::string>());
         if (!json.is<std::string>()) return false;
         m_jumpscare = json.as<std::string>();
         return true;

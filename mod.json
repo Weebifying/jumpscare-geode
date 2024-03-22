@@ -5,7 +5,7 @@
 		"android": "2.205",
 		"mac": "2.200"
 	},
-	"version": "v1.3.0",
+	"version": "v1.3.1",
 	"id": "weebify.jumpscare",
 	"name": "Jumpscare",
 	"developer": "Weebify",
@@ -16,7 +16,8 @@
 		"files": [
 			"resources/background.png",
 			"resources/jumpscare.png",
-			"resources/jumpscareAudio.mp3"
+			"resources/jumpscareAudio.mp3",
+			"resources/image.png"
 		],
 		"sprites": [
 			"resources/GJ_jumpscareBtn_001.png"

@@ -59,7 +59,6 @@ class $modify(AltPlayerObject, PlayerObject) {
 			dir = chosenDir.front();
 		} else {
 			dir = as<JumpscareValue*>(Mod::get()->getSetting("jumpscare_in_use"))->getJumpscare();
-			log::info("{}", dir.string());
 		}
 		
 		// check if player is NOT in level editor
@@ -121,22 +120,21 @@ class $modify(AltPlayerObject, PlayerObject) {
 		if (!Mod::get()->getSettingValue<bool>("disable_blink"))
 			jumpscare->runAction(CCBlink::create(0.5, 10))->setTag(2);
 
-		// fucking works now thanks dank_meme and zmx
-		Loader::get()->queueInMainThread([dir] {
-			auto fmae = FMODAudioEngine::sharedEngine();
-			auto system = fmae->m_system;
+		// thanks zmx
+		auto fmae = FMODAudioEngine::sharedEngine();
+		auto system = fmae->m_system;
 
-			FMOD::Channel* channel;
-			FMOD::Sound* sound;
+		FMOD::Channel* channel;
+		FMOD::Sound* sound;
 
-			// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
-			system->createSound((dir / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
-			system->playSound(sound, nullptr, false, &channel);
+		// fmod functions return a FMOD_RESULT enum type instead, so the actual return is passed as the last argument of the func
+		system->createSound((dir / "jumpscareAudio.mp3").string().c_str(), FMOD_DEFAULT, nullptr, &sound);
+		system->playSound(sound, nullptr, false, &channel);
 
-			if (!Mod::get()->getSettingValue<bool>("full_volume"))
-				channel->setVolume(fmae->getEffectsVolume());
-		});
-
+		if (!Mod::get()->getSettingValue<bool>("full_volume"))
+			channel->setVolume(fmae->getEffectsVolume());
+		
+		
 		jumpscare->runAction(
 			CCSequence::create(
 				CCDelayTime::create(1.0),

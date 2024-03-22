@@ -14,8 +14,6 @@ To **add your own jumpscare**, make a new folder in the config folder and add yo
 
 The assets must include 2 files: `"jumpscare.png"` for the jumpscare image, and `"jumpscareAudio.mp3"` for the jumpscare audio.
 
-<cr>For now the jumpscares are chosen at random, I will probably add an option to choose a specific jumpscare to use in a future update</c>
-
 Example files structure:
 ```
 config/weebify.jumpscare/
@@ -29,4 +27,4 @@ config/weebify.jumpscare/
 
 # Special thanks to:
 - CatXus and Jaid, for testing this mod on Android!
-- [Prevter](https://github.com/Prevter), for testing this mod on MacOS!
+- [Prevter](https://github.com/Prevter) and [Erymanthus](https://github.com/RayDeeUx), for testing this mod on MacOS!
