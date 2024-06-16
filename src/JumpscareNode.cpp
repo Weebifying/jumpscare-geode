@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingNode.hpp>
+#include <Geode/ui/TextInput.hpp>
 
 #include "utils.hpp"
 #include "JumpscareValue.hpp"
@@ -35,12 +36,13 @@ protected:
         label->setScale(0.5f);
         this->addChild(label);
 
-        auto inputNode = InputNode::create(103.f, "...", "chatFont.fnt");
-        inputNode->setScale(0.65f);
-        inputNode->setPosition(-51.5f, 0);
-        inputNode->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
-        inputNode->getInput()->setAllowedChars("");
-        menu->addChild(inputNode);
+        auto textInput = TextInput::create(103.f, "...", "chatFont.fnt");
+        textInput->setScale(0.65f);
+        textInput->setPosition(-51.5f, 0);
+        textInput->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
+        textInput->getInputNode()->setTouchEnabled(false);
+        
+        menu->addChild(textInput);
 
         auto arrowRight = CCSprite::createWithSpriteFrameName("navArrowBtn_001.png");
         arrowRight->setScale(0.3f);
@@ -67,7 +69,7 @@ protected:
             index++;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<InputNode>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
+        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
         this->dispatchChanged();
     }
 
@@ -80,7 +82,7 @@ protected:
             index--;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<InputNode>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
+        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
         this->dispatchChanged();
     }
 
