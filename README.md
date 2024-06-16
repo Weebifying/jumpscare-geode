@@ -8,7 +8,7 @@ You can change the **behavior** of the mod in the mod settings
 
 # How to change/add your own jumpscare
 
-To **access this mod's config folder**, click the pencil button next to the mod settings button below.
+To **access this mod's config folder**, open the mod's settings popup and press the **Open Config Folder** button.
 
 To **add your own jumpscare**, make a new folder in the config folder and add your assets in it.
 
@@ -26,5 +26,6 @@ config/weebify.jumpscare/
 ```
 
 # Special thanks to:
-- CatXus and Jaid, for testing this mod on Android!
-- [Prevter](https://github.com/Prevter) and [Erymanthus](https://github.com/RayDeeUx), for testing this mod on MacOS!
+- CatXus and Jaid, for testing this mod on Android 2.205!
+- [Prevter](https://github.com/Prevter) and [Erymanthus](https://github.com/RayDeeUx), for testing this mod on MacOS 2.200!
+- [zmx](https://github.com/qimiko), for testing this mod on MacOS 2.206!

@@ -41,6 +41,10 @@
 			"name": "Jumpscare in use",
             "type": "custom"
         },
+		"open_config": {
+			"name": "Open config folder",
+			"type": "custom"
+		},
 		"chance": {
             "name": "Probability (%)",
             "type": "float",
@@ -49,7 +53,7 @@
             "max": 100
 		},
 		"from_percent": {
-			"name": "Jumpscare after (%)",
+			"name": "After percentage (classic)",
 			"description": "Only triggers the jumpscare after a certain percentage",
 			"type": "float",
 			"default": 10,
@@ -57,8 +61,8 @@
 			"max": 100
 		},
 		"from_time": {
-			"name": "Jumpscare after (s)",
-			"description": "Only triggers the jumpscare after a certain time",
+			"name": "After seconds (platformer)",
+			"description": "Only triggers the jumpscare after a certain number of seconds",
 			"type": "float",
 			"default": 30,
 			"min": 0
@@ -72,12 +76,13 @@
 		"full_volume": {
 			"name": "Full volume",
 			"type": "bool",
-			"description": "If enabled, the jumpscare's audio will play at full volume",
+			"description": "If enabled, the jumpscare's audio will always play at full volume",
 			"default": false
 		},
 		"disable_blink": {
 			"name": "Disable blinking effect",
 			"type": "bool",
+			"description": "If enabled, the blinking effect of the jumpscare effect will be disabled",
 			"default": false
 		},
 		"button": {

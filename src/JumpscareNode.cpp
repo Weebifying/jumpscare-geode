@@ -41,7 +41,6 @@ protected:
         textInput->setPosition(-51.5f, 0);
         textInput->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
         textInput->getInputNode()->setTouchEnabled(false);
-        
         menu->addChild(textInput);
 
         auto arrowRight = CCSprite::createWithSpriteFrameName("navArrowBtn_001.png");
