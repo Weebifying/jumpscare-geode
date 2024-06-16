@@ -7,7 +7,7 @@
 using namespace geode::prelude;
 namespace fs = std::filesystem;
 
-fs::path configDir = Mod::get()->getConfigDir().string();
+fs::path configDir = Mod::get()->getConfigDir();
 std::string defaultJumpscare = (configDir / "jumpscare").string();
 
 class JumpscareNode : public SettingNode {

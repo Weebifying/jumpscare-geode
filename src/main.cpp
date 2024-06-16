@@ -19,8 +19,8 @@ int currentMilisecond = 0;
 
 
 $on_mod(Loaded) {
-	fs::path configDir = Mod::get()->getConfigDir().string();
-	fs::path resourcesDir = Mod::get()->getResourcesDir().string();
+	fs::path configDir = Mod::get()->getConfigDir();
+	fs::path resourcesDir = Mod::get()->getResourcesDir();
 
 	std::vector<fs::path> jumpscareDirs = getJumpscareSubDir(configDir);
 	
@@ -42,8 +42,8 @@ class $modify(AltPlayerObject, PlayerObject) {
 	void playerDestroyed(bool p0) {
     	PlayerObject::playerDestroyed(p0);
 
-		fs::path configDir = Mod::get()->getConfigDir().string();
-		fs::path resourcesDir = Mod::get()->getResourcesDir().string();
+		fs::path configDir = Mod::get()->getConfigDir();
+		fs::path resourcesDir = Mod::get()->getResourcesDir();
 		fs::path dir;
 
 		std::random_device rd;

@@ -5,8 +5,8 @@ using namespace geode::prelude;
 
 std::vector<fs::path> getJumpscareSubDir(fs::path path) {
 	std::vector<fs::path> ret;
-    fs::path configDir = Mod::get()->getConfigDir().string();
-    fs::path resourcesDir = Mod::get()->getResourcesDir().string();
+    fs::path configDir = Mod::get()->getConfigDir();
+    fs::path resourcesDir = Mod::get()->getResourcesDir();
 
 	for (auto& child : fs::directory_iterator(path)) 
 		if (fs::is_directory(child)) 

@@ -1,11 +1,11 @@
 {
-	"geode": "2.0.0-beta.22",
+	"geode": "3.0.0-beta.1",
 	"gd": {
-		"win": "2.204",
-		"android": "2.205",
-		"mac": "2.200"
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206"
 	},
-	"version": "v1.3.1",
+	"version": "v1.3.2",
 	"id": "weebify.jumpscare",
 	"name": "Jumpscare",
 	"developer": "Weebify",
@@ -26,7 +26,7 @@
 	"dependencies": [
         {
             "id": "geode.node-ids",
-            "version": ">=v1.8.0",
+            "version": ">=1.11.0",
             "importance": "required"
         }
     ],
