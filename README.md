@@ -28,4 +28,4 @@ config/weebify.jumpscare/
 # Special thanks to:
 - CatXus and Jaid, for testing this mod on Android 2.205!
 - [Prevter](https://github.com/Prevter) and [Erymanthus](https://github.com/RayDeeUx), for testing this mod on MacOS 2.200!
-- [zmx](https://github.com/qimiko), for testing this mod on MacOS 2.206!
+- [zmx](https://github.com/qimiko) and [ninXout](https://github.com/ninXout), for testing this mod on MacOS 2.206!
