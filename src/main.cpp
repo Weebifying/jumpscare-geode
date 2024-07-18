@@ -63,6 +63,9 @@ class $modify(AltPlayerObject, PlayerObject) {
 		
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
+		
+		// check if player is not a ghost (globed and such)
+		if (this != PlayLayer::get()->m_player1 && this != PlayLayer::get()->m_player2) return;
 
 		// probability check
 		auto chance = Mod::get()->getSettingValue<double>("chance");
