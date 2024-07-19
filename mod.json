@@ -16,11 +16,11 @@
 		"files": [
 			"resources/background.png",
 			"resources/jumpscare.png",
-			"resources/jumpscareAudio.mp3",
-			"resources/image.png"
+			"resources/jumpscareAudio.mp3"
 		],
 		"sprites": [
-			"resources/GJ_jumpscareBtn_001.png"
+			"resources/GJ_jumpscareBtn_001.png",
+			"resources/image.png"
 		]
 	},
 	"dependencies": [

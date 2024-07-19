@@ -1,4 +1,6 @@
 # Jumpscare Changelog
+## v1.3.4
+- Fixed image preview in mod description
 ## v1.3.3
 - Fixed a bug where the jumpscare can be triggered if another Globed player dies near you
 ## v1.3.2
