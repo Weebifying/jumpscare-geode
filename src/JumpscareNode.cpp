@@ -19,6 +19,8 @@ protected:
         if (!SettingNodeV3::init(setting, width))
             return false;
 
+        this->getNameMenu()->setVisible(false);
+
         m_value = setting.get();
         m_currentJumpscare = m_value->getJumpscare();
         m_jumpscareDirs = getJumpscareSubDir(configDir);

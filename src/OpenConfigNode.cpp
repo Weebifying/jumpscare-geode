@@ -33,6 +33,7 @@ protected:
     bool init(std::shared_ptr<OpenConfigValue> value, float width) {
         if (!SettingNodeV3::init(value, width))
             return false;
+        this->getNameMenu()->setVisible(false);
 
         this->setContentSize({ width, 40.f });
 
