@@ -71,7 +71,7 @@ protected:
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
         this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
-        // this->dispatchChanged();
+        this->onCommit();
     }
 
     void onPrev(CCObject* sender) {
@@ -84,16 +84,16 @@ protected:
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
         this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
-        // this->dispatchChanged();
+        this->onCommit();
     }
 
 public:
     // to save the setting
-    void onCommit() {}
-    void onResetToDefault() {}
-    void commit() const {
+    void onCommit() {
         m_value->setJumpscare(m_currentJumpscare);
-        // this->dispatchCommitted();
+    }
+    void onResetToDefault() {
+        m_currentJumpscare = defaultJumpscare;
     }
 
     bool hasUncommittedChanges() const {
@@ -102,10 +102,6 @@ public:
 
     bool hasNonDefaultValue() const {
         return m_value->getJumpscare() != defaultJumpscare;
-    }
-
-    void resetToDefault() {
-        m_currentJumpscare = defaultJumpscare;
     }
 
     static JumpscareNode* create(std::shared_ptr<JumpscareValue> value, float width) {
