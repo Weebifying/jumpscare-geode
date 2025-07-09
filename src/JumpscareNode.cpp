@@ -125,6 +125,8 @@ SettingNodeV3* JumpscareValue::createNode(float width) {
 }
 
 
-$on_mod(Loaded) {
-    Mod::get()->registerCustomSettingType("jumpscare_in_use", &JumpscareValue::parse);
+$execute {
+    log::info("FUCKKKKK");
+    auto result = Mod::get()->registerCustomSettingType("jumpscare-in-use", &JumpscareValue::parse);
+    if (result.isErr()) log::info("error: {}", result.unwrapErr());
 }

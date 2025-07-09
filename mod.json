@@ -36,11 +36,12 @@
 		},
 		"jumpscare_in_use": {
 			"name": "Jumpscare In Use",
-            "type": "custom:jumpscare_in_use"
+            "type": "custom:jumpscare-in-use",
+			"default": "jumpscare"
         },
 		"open_config": {
 			"name": "Open Config Folder",
-			"type": "custom:open_config"
+			"type": "custom:open-config"
 		},
 		"chance": {
             "name": "Probability (%)",

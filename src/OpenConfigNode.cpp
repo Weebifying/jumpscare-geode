@@ -90,6 +90,8 @@ void OpenConfigNode::onOpenConfig(CCObject*) {
     log::warn("{}", utils::file::openFolder(Mod::get()->getConfigDir()));
 }
 
-$on_mod(Loaded) {
-	Mod::get()->registerCustomSettingType("open_config", &OpenConfigValue::parse);
+$execute {
+    log::info("FUCKKKKK");
+	auto result = Mod::get()->registerCustomSettingType("open-config", &OpenConfigValue::parse);
+    if (result.isErr()) log::info("error: {}", result.unwrapErr());
 }
