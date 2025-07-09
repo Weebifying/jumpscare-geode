@@ -58,7 +58,7 @@ class $modify(AltPlayerObject, PlayerObject) {
 			std::sample(jumpscareDirs.begin(), jumpscareDirs.end(), chosenDir.begin(), 1, gen);
 			dir = chosenDir.front();
 		} else {
-			dir = Mod::get()->getSettingValue<JumpscareValue>("jumpscare_in_use").getJumpscare();
+			dir = Mod::get()->getSettingValue<JumpscareValueStruct>("jumpscare_in_use").jumpscare;
 		}
 		
 		// check if player is NOT in level editor

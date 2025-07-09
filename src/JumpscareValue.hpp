@@ -4,7 +4,21 @@
 
 using namespace geode::prelude;
 
-class JumpscareValue : public SettingV3 {
+struct JumpscareValueStruct {
+    std::string jumpscare;
+
+    // no idea what any of this does but it was in the docs
+    bool operator==(JumpscareValueStruct const& other) const = default;
+    operator std::string() const { return jumpscare; }
+
+    JumpscareValueStruct() = default;
+    JumpscareValueStruct(std::string jumpscare) : jumpscare(jumpscare) {}
+    JumpscareValueStruct(JumpscareValueStruct const&) = default;
+
+    std::string getJumpscareValue() const { return jumpscare; }
+};
+
+class JumpscareValue : public SettingBaseValueV3<std::string> {
 protected:
     std::string m_jumpscare;
 
@@ -47,7 +61,17 @@ public:
         m_jumpscare = (Mod::get()->getConfigDir() / "jumpscare").string();
     }
 };
+
 template <>
-struct geode::SettingTypeForValueType<JumpscareValue> {
+struct matjson::Serialize<JumpscareValueStruct> {
+    static matjson::Value toJson(const JumpscareValueStruct& settingValue) { return settingValue.jumpscare; }
+    static Result<JumpscareValueStruct> fromJson(const matjson::Value& json) {
+        GEODE_UNWRAP_INTO(auto seymourSkinner, json.asString());
+        return Ok(JumpscareValueStruct(seymourSkinner));
+    }
+};
+
+template <>
+struct geode::SettingTypeForValueType<JumpscareValueStruct> {
     using SettingType = JumpscareValue;
 };
