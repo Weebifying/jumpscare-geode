@@ -23,6 +23,7 @@ protected:
 
         m_value = setting.get();
         m_currentJumpscare = m_value->getJumpscare();
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
         m_jumpscareDirs = getJumpscareSubDir(configDir);
 
         this->setContentSize({ width, 55.f });
@@ -91,9 +92,11 @@ public:
     // to save the setting
     void onCommit() {
         m_value->setJumpscare(m_currentJumpscare);
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
     }
     void onResetToDefault() {
         m_currentJumpscare = defaultJumpscare;
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
     }
 
     bool hasUncommittedChanges() const {
@@ -123,8 +126,7 @@ SettingNodeV3* JumpscareValue::createNode(float width) {
 }
 
 
-$execute {
-    log::info("FUCKKKKK");
+$on_mod(Loaded) {
     auto result = Mod::get()->registerCustomSettingType("jumpscare-in-use", &JumpscareValue::parse);
     if (result.isErr()) log::info("error: {}", result.unwrapErr());
 }
