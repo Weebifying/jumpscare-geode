@@ -7,7 +7,7 @@ using namespace geode::prelude;
 struct JumpscareValueStruct {
     std::string jumpscare;
 
-    // no idea what any of this does but it was in the docs
+    // all of this is copied from colon, who copied it from the docs, because neither i nor colon had any idea what needed to be done
     bool operator==(JumpscareValueStruct const& other) const = default;
     operator std::string() const { return jumpscare; }
 
