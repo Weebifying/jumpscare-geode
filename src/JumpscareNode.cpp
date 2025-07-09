@@ -13,12 +13,14 @@ class JumpscareNode : public SettingNodeV3 {
 protected:
     std::string m_currentJumpscare;
     std::vector<fs::path> m_jumpscareDirs;
+    JumpscareValue* m_value {};
 
-    bool init(JumpscareValue* value, float width) {
-        if (!SettingNodeV3::init(value))
+    bool init(std::shared_ptr<JumpscareValue> setting, float width) {
+        if (!SettingNodeV3::init(setting, width))
             return false;
-        
-        m_currentJumpscare = value->getJumpscare();
+
+        m_value = setting.get();
+        m_currentJumpscare = m_value->getJumpscare();
         m_jumpscareDirs = getJumpscareSubDir(configDir);
 
         this->setContentSize({ width, 55.f });
@@ -37,7 +39,7 @@ protected:
         auto textInput = TextInput::create(103.f, "...", "chatFont.fnt");
         textInput->setScale(0.65f);
         textInput->setPosition(-51.5f, 0);
-        textInput->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
+        textInput->setString(fs::path(m_value->getJumpscare()).filename().string());
         textInput->getInputNode()->setTouchEnabled(false);
         menu->addChild(textInput);
 
@@ -66,8 +68,8 @@ protected:
             index++;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
-        this->dispatchChanged();
+        this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
+        // this->dispatchChanged();
     }
 
     void onPrev(CCObject* sender) {
@@ -79,30 +81,32 @@ protected:
             index--;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
-        this->dispatchChanged();
+        this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
+        // this->dispatchChanged();
     }
 
 public:
     // to save the setting
-    void commit() override {
-        static_cast<JumpscareValue*>(m_value)->setJumpscare(m_currentJumpscare);
-        this->dispatchCommitted();
+    void onCommit() {}
+    void onResetToDefault() {}
+    void commit() const {
+        m_value->setJumpscare(m_currentJumpscare);
+        // this->dispatchCommitted();
     }
 
-    bool hasUncommittedChanges() override {
-        return m_currentJumpscare != static_cast<JumpscareValue*>(m_value)->getJumpscare();
+    bool hasUncommittedChanges() const {
+        return m_currentJumpscare != m_value->getJumpscare();
     }
 
-    bool hasNonDefaultValue() override {
-        return m_currentJumpscare != defaultJumpscare;
+    bool hasNonDefaultValue() const {
+        return m_value->getJumpscare() != defaultJumpscare;
     }
 
-    void resetToDefault() override {
+    void resetToDefault() {
         m_currentJumpscare = defaultJumpscare;
     }
 
-    static JumpscareNode* create(JumpscareValue* value, float width) {
+    static JumpscareNode* create(std::shared_ptr<JumpscareValue> value, float width) {
         auto ret = new JumpscareNode();
         if (ret && ret->init(value, width)) {
             ret->autorelease();
@@ -113,8 +117,11 @@ public:
     }
 };
 
-SettingNode* JumpscareValue::createNode(float width) {
-    return JumpscareNode::create(this, width);
+SettingNodeV3* JumpscareValue::createNode(float width) {
+    return JumpscareNode::create(
+        std::static_pointer_cast<JumpscareValue>(shared_from_this()),
+        width
+    );
 }
 
 

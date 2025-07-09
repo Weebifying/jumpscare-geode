@@ -30,8 +30,8 @@ public:
 
 class OpenConfigNode : public SettingNodeV3 {
 protected:
-    bool init(OpenConfigValue* value, float width) {
-        if (!SettingNodeV3::init(value))
+    bool init(std::shared_ptr<OpenConfigValue> value, float width) {
+        if (!SettingNodeV3::init(value, width))
             return false;
 
         this->setContentSize({ width, 40.f });
@@ -59,23 +59,17 @@ protected:
 public:
     void onOpenConfig(CCObject*);
 
-    void commit() override {
-        this->dispatchCommitted();
+    void onCommit() {}
+    void onResetToDefault() {}
+    bool hasUncommittedChanges() const {
+        return false;
     }
-
-    bool hasUncommittedChanges() override {
+    bool hasNonDefaultValue() const {
         return false;
     }
 
-    bool hasNonDefaultValue() override {
-        return true;
-    }
-
-    void resetToDefault() override {
-
-    }
-    static OpenConfigNode* create(OpenConfigValue* value, float width) {
-        auto ret = new OpenConfigNode;
+    static OpenConfigNode* create(std::shared_ptr<OpenConfigValue> value, float width) {
+        auto ret = new OpenConfigNode();
         if (ret && ret->init(value, width)) {
             ret->autorelease();
             return ret;
@@ -85,8 +79,11 @@ public:
     }
 };
 
-SettingNode* OpenConfigValue::createNode(float width) {
-    return OpenConfigNode::create(this, width);
+SettingNodeV3* OpenConfigValue::createNode(float width) {
+    return OpenConfigNode::create(
+        std::static_pointer_cast<OpenConfigValue>(shared_from_this()),
+        width
+    );
 }
 
 void OpenConfigNode::onOpenConfig(CCObject*) {

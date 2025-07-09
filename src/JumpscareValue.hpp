@@ -19,8 +19,8 @@ public:
 	}
 
     bool load(matjson::Value const& json) override {
-        if (!json.is<std::string>()) return false;
-        m_jumpscare = json.as<std::string>();
+        if (json.asString().isErr()) return false;
+        m_jumpscare = json.asString().unwrap();
         return true;
     }
 
@@ -35,7 +35,19 @@ public:
         m_jumpscare = jumpscare;
     }
 
-    std::string getJumpscare() const {
+    std::string getJumpscare() {
         return m_jumpscare;
     }
+
+    bool isDefaultValue() const override {
+        return m_jumpscare == (Mod::get()->getConfigDir() / "jumpscare").string();
+    }
+
+    void reset() override {
+        m_jumpscare = (Mod::get()->getConfigDir() / "jumpscare").string();
+    }
+};
+template <>
+struct geode::SettingTypeForValueType<JumpscareValue> {
+    using SettingType = JumpscareValue;
 };
