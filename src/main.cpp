@@ -61,7 +61,6 @@ class $modify(AltPlayerObject, PlayerObject) {
 			auto actualDir = Mod::get()->getSavedValue<std::string>("actual-jumpscare-dir");
 			dir = actualDir.empty() ? (configDir / "jumpscare").string() : actualDir;
 		}
-		log::info("dir: {}",dir);
 		
 		// check if player is NOT in level editor
 		if (!PlayLayer::get()) return;
