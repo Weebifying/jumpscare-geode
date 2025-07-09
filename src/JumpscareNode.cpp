@@ -1,6 +1,4 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/SettingNode.hpp>
-#include <Geode/ui/TextInput.hpp>
 
 #include "utils.hpp"
 #include "JumpscareValue.hpp"
@@ -11,13 +9,13 @@ namespace fs = std::filesystem;
 fs::path configDir = Mod::get()->getConfigDir();
 std::string defaultJumpscare = (configDir / "jumpscare").string();
 
-class JumpscareNode : public SettingNode {
+class JumpscareNode : public SettingNodeV3 {
 protected:
     std::string m_currentJumpscare;
     std::vector<fs::path> m_jumpscareDirs;
 
     bool init(JumpscareValue* value, float width) {
-        if (!SettingNode::init(value))
+        if (!SettingNodeV3::init(value))
             return false;
         
         m_currentJumpscare = value->getJumpscare();
@@ -88,12 +86,12 @@ protected:
 public:
     // to save the setting
     void commit() override {
-        as<JumpscareValue*>(m_value)->setJumpscare(m_currentJumpscare);
+        static_cast<JumpscareValue*>(m_value)->setJumpscare(m_currentJumpscare);
         this->dispatchCommitted();
     }
 
     bool hasUncommittedChanges() override {
-        return m_currentJumpscare != as<JumpscareValue*>(m_value)->getJumpscare();
+        return m_currentJumpscare != static_cast<JumpscareValue*>(m_value)->getJumpscare();
     }
 
     bool hasNonDefaultValue() override {
@@ -121,5 +119,5 @@ SettingNode* JumpscareValue::createNode(float width) {
 
 
 $on_mod(Loaded) {
-	Mod::get()->addCustomSetting<JumpscareValue>("jumpscare_in_use", defaultJumpscare);
+    Mod::get()->registerCustomSettingType("jumpscare_in_use", &JumpscareValue::parse);
 }

@@ -1,28 +1,37 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/SettingNode.hpp>
+#include <Geode/loader/SettingV3.hpp>
+
 using namespace geode::prelude;
 
-
-class OpenConfigValue : public SettingValue {
+class OpenConfigValue : public SettingV3 {
 protected:
     std::string m_placeholder;
 public:
-    OpenConfigValue(std::string const& key, std::string const& modID, std::string const& placeholder)
-      : SettingValue(key, modID), m_placeholder(placeholder) {}
-
+    static Result<std::shared_ptr<SettingV3>> parse(std::string const& key, std::string const& modID, matjson::Value const& json) {
+		auto res = std::make_shared<OpenConfigValue>();
+		auto root = checkJson(json, "OpenConfigValue");
+		res->init(key, modID, root);
+		res->parseNameAndDescription(root);
+		res->parseEnableIf(root);
+		return root.ok(std::static_pointer_cast<SettingV3>(res));
+	}
     bool load(matjson::Value const& json) override {
         return true;
     }
     bool save(matjson::Value& json) const override {
         return true;
     }
+	bool isDefaultValue() const override {
+		return true;
+	}
+	void reset() override {}
     SettingNode* createNode(float width) override;
 };
 
-class OpenConfigNode : public SettingNode {
+class OpenConfigNode : public SettingNodeV3 {
 protected:
     bool init(OpenConfigValue* value, float width) {
-        if (!SettingNode::init(value))
+        if (!SettingNodeV3::init(value))
             return false;
 
         this->setContentSize({ width, 40.f });
@@ -85,5 +94,5 @@ void OpenConfigNode::onOpenConfig(CCObject*) {
 }
 
 $on_mod(Loaded) {
-	Mod::get()->addCustomSetting<OpenConfigValue>("open_config", "none");
+	Mod::get()->registerCustomSettingType("open_config", &OpenConfigValue::parse);
 }
