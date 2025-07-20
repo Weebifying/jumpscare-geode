@@ -1,29 +1,39 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/SettingNode.hpp>
+#include <Geode/loader/SettingV3.hpp>
+
 using namespace geode::prelude;
 
-
-class OpenConfigValue : public SettingValue {
+class OpenConfigValue : public SettingV3 {
 protected:
     std::string m_placeholder;
 public:
-    OpenConfigValue(std::string const& key, std::string const& modID, std::string const& placeholder)
-      : SettingValue(key, modID), m_placeholder(placeholder) {}
-
+    static Result<std::shared_ptr<SettingV3>> parse(std::string const& key, std::string const& modID, matjson::Value const& json) {
+		auto res = std::make_shared<OpenConfigValue>();
+		auto root = checkJson(json, "OpenConfigValue");
+		res->init(key, modID, root);
+		res->parseNameAndDescription(root);
+		res->parseEnableIf(root);
+		return root.ok(std::static_pointer_cast<SettingV3>(res));
+	}
     bool load(matjson::Value const& json) override {
         return true;
     }
     bool save(matjson::Value& json) const override {
         return true;
     }
+	bool isDefaultValue() const override {
+		return true;
+	}
+	void reset() override {}
     SettingNode* createNode(float width) override;
 };
 
-class OpenConfigNode : public SettingNode {
+class OpenConfigNode : public SettingNodeV3 {
 protected:
-    bool init(OpenConfigValue* value, float width) {
-        if (!SettingNode::init(value))
+    bool init(std::shared_ptr<OpenConfigValue> value, float width) {
+        if (!SettingNodeV3::init(value, width))
             return false;
+        this->getNameMenu()->setVisible(false);
 
         this->setContentSize({ width, 40.f });
 
@@ -50,23 +60,17 @@ protected:
 public:
     void onOpenConfig(CCObject*);
 
-    void commit() override {
-        this->dispatchCommitted();
+    void onCommit() {}
+    void onResetToDefault() {}
+    bool hasUncommittedChanges() const {
+        return false;
     }
-
-    bool hasUncommittedChanges() override {
+    bool hasNonDefaultValue() const {
         return false;
     }
 
-    bool hasNonDefaultValue() override {
-        return true;
-    }
-
-    void resetToDefault() override {
-
-    }
-    static OpenConfigNode* create(OpenConfigValue* value, float width) {
-        auto ret = new OpenConfigNode;
+    static OpenConfigNode* create(std::shared_ptr<OpenConfigValue> value, float width) {
+        auto ret = new OpenConfigNode();
         if (ret && ret->init(value, width)) {
             ret->autorelease();
             return ret;
@@ -76,8 +80,11 @@ public:
     }
 };
 
-SettingNode* OpenConfigValue::createNode(float width) {
-    return OpenConfigNode::create(this, width);
+SettingNodeV3* OpenConfigValue::createNode(float width) {
+    return OpenConfigNode::create(
+        std::static_pointer_cast<OpenConfigValue>(shared_from_this()),
+        width
+    );
 }
 
 void OpenConfigNode::onOpenConfig(CCObject*) {
@@ -85,5 +92,6 @@ void OpenConfigNode::onOpenConfig(CCObject*) {
 }
 
 $on_mod(Loaded) {
-	Mod::get()->addCustomSetting<OpenConfigValue>("open_config", "none");
+	auto result = Mod::get()->registerCustomSettingType("open-config", &OpenConfigValue::parse);
+    if (result.isErr()) log::info("error: {}", result.unwrapErr());
 }
