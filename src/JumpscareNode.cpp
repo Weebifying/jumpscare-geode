@@ -1,6 +1,4 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/SettingNode.hpp>
-#include <Geode/ui/TextInput.hpp>
 
 #include "utils.hpp"
 #include "JumpscareValue.hpp"
@@ -11,16 +9,21 @@ namespace fs = std::filesystem;
 fs::path configDir = Mod::get()->getConfigDir();
 std::string defaultJumpscare = (configDir / "jumpscare").string();
 
-class JumpscareNode : public SettingNode {
+class JumpscareNode : public SettingNodeV3 {
 protected:
     std::string m_currentJumpscare;
     std::vector<fs::path> m_jumpscareDirs;
+    JumpscareValue* m_value {};
 
-    bool init(JumpscareValue* value, float width) {
-        if (!SettingNode::init(value))
+    bool init(std::shared_ptr<JumpscareValue> setting, float width) {
+        if (!SettingNodeV3::init(setting, width))
             return false;
-        
-        m_currentJumpscare = value->getJumpscare();
+
+        this->getNameMenu()->setVisible(false);
+
+        m_value = setting.get();
+        m_currentJumpscare = m_value->getJumpscare();
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
         m_jumpscareDirs = getJumpscareSubDir(configDir);
 
         this->setContentSize({ width, 55.f });
@@ -39,7 +42,7 @@ protected:
         auto textInput = TextInput::create(103.f, "...", "chatFont.fnt");
         textInput->setScale(0.65f);
         textInput->setPosition(-51.5f, 0);
-        textInput->setString(fs::path(as<JumpscareValue*>(m_value)->getJumpscare()).filename().string());
+        textInput->setString(fs::path(m_value->getJumpscare()).filename().string());
         textInput->getInputNode()->setTouchEnabled(false);
         menu->addChild(textInput);
 
@@ -68,8 +71,8 @@ protected:
             index++;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
-        this->dispatchChanged();
+        this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
+        this->onCommit();
     }
 
     void onPrev(CCObject* sender) {
@@ -81,30 +84,30 @@ protected:
             index--;
 
         m_currentJumpscare = m_jumpscareDirs[index].string();
-        getChildOfType<TextInput>(this->getChildByID("button-menu"), 0)->setString(m_jumpscareDirs[index].filename().string());
-        this->dispatchChanged();
+        this->getChildByID("button-menu")->getChildByType<TextInput>(0)->setString(m_jumpscareDirs[index].filename().string());
+        this->onCommit();
     }
 
 public:
     // to save the setting
-    void commit() override {
-        as<JumpscareValue*>(m_value)->setJumpscare(m_currentJumpscare);
-        this->dispatchCommitted();
+    void onCommit() {
+        m_value->setJumpscare(m_currentJumpscare);
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
     }
-
-    bool hasUncommittedChanges() override {
-        return m_currentJumpscare != as<JumpscareValue*>(m_value)->getJumpscare();
-    }
-
-    bool hasNonDefaultValue() override {
-        return m_currentJumpscare != defaultJumpscare;
-    }
-
-    void resetToDefault() override {
+    void onResetToDefault() {
         m_currentJumpscare = defaultJumpscare;
+        Mod::get()->setSavedValue<std::string>("actual-jumpscare-dir", m_currentJumpscare);
     }
 
-    static JumpscareNode* create(JumpscareValue* value, float width) {
+    bool hasUncommittedChanges() const {
+        return m_currentJumpscare != m_value->getJumpscare();
+    }
+
+    bool hasNonDefaultValue() const {
+        return m_value->getJumpscare() != defaultJumpscare;
+    }
+
+    static JumpscareNode* create(std::shared_ptr<JumpscareValue> value, float width) {
         auto ret = new JumpscareNode();
         if (ret && ret->init(value, width)) {
             ret->autorelease();
@@ -115,11 +118,15 @@ public:
     }
 };
 
-SettingNode* JumpscareValue::createNode(float width) {
-    return JumpscareNode::create(this, width);
+SettingNodeV3* JumpscareValue::createNode(float width) {
+    return JumpscareNode::create(
+        std::static_pointer_cast<JumpscareValue>(shared_from_this()),
+        width
+    );
 }
 
 
 $on_mod(Loaded) {
-	Mod::get()->addCustomSetting<JumpscareValue>("jumpscare_in_use", defaultJumpscare);
+    auto result = Mod::get()->registerCustomSettingType("jumpscare-in-use", &JumpscareValue::parse);
+    if (result.isErr()) log::info("error: {}", result.unwrapErr());
 }
