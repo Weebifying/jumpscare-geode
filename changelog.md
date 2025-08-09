@@ -1,4 +1,6 @@
 # Jumpscare Changelog
+## v1.4.0
+- Updated for 2.2074 thanks to Erymanthus
 ## v1.3.4
 - Fixed image preview in mod description
 ## v1.3.3

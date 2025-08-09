@@ -19,6 +19,4 @@ The assets must include 2 files: `"jumpscare.png"` for the jumpscare image, and 
 ![src tree](weebify.jumpscare/image.png)
 
 # Special thanks to:
-- [CatXus](user:14467409) and [Jaid](user:7669473), for testing this mod on Android 2.205!
-- [Prevter](user:7696536) and [Erymanthus](user:1941705), for testing this mod on MacOS 2.200!
-- [zmx](user:5327860) and [ninXout](user:7479054), for testing this mod on MacOS 2.206!
+- [Erymanthus](user:1941705), for porting this mod to 2.2074!

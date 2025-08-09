@@ -1,18 +1,20 @@
 {
-	"geode": "4.4.0",
+	"geode": "4.7.1",
 	"gd": {
 		"win": "2.2074",
 		"mac": "2.2074",
 		"ios": "2.2074",
 		"android": "2.2074"
 	},
-	"version": "v1.3.4",
+	"version": "v1.4.0",
 	"id": "weebify.jumpscare",
 	"name": "Jumpscare",
 	"developer": "Weebify",
 	"description": "Randomly jumpscares you when you die",
-	"repository": "https://github.com/Weebifying/jumpscare-geode",
-	"tags": ["Gameplay"],
+	"links": {
+		"source": "https://github.com/Weebifying/jumpscare-geode"
+	},
+	"tags": ["gameplay"],
 	"resources": {
 		"files": [
 			"resources/background.png",
