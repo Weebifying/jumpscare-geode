@@ -39,7 +39,7 @@ jobs:
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
-          bindings: RayDeeUx/bindings
+          bindings: Weebifying/bindings
           bindings-ref: "win-0xa87d0,-m1-0x19d788,-imac-0x1e6190,-ios-0x53974"
           build-config: RelWithDebInfo
           combine: true
