@@ -1,12 +1,14 @@
 # Jumpscare Changelog
+## v1.4.1
+- Updated for GD 2.2081
 ## v1.4.0
-- Updated for 2.2074 thanks to Erymanthus
+- Updated for GD 2.2074 thanks to Erymanthus
 ## v1.3.4
 - Fixed image preview in mod description
 ## v1.3.3
 - Fixed a bug where the jumpscare can be triggered if another Globed player dies near you
 ## v1.3.2
-- Updated for 2.206 (Geode v3.0.0-beta.1)
+- Updated for GD 2.206 (Geode v3.0.0-beta.1)
 - Added a button to open the config folder in the mod's settings popup
 ## v1.3.1
 - Added an option to choose a specific jumpscare to be used
